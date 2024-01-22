@@ -15,7 +15,7 @@
 #     for neighbor in graph[vertex]:
 #         if neighbor not in visited:
 #             dfs_recursive(graph, neighbor, visited, path)
-#     return path
+#     return path[:-1]
 #
 #
 # def bfs_recursive(graph, start, end):
@@ -114,13 +114,13 @@
 #
 # if __name__ == "__main__":
 #     main()
+#
 
 
 import networkx as nx
-import pandas as pd
+import matplotlib.pyplot as plt
 from collections import deque
 import random
-
 def dfs_recursive(graph, vertex, visited=None, path=None):
     if visited is None:
         visited = set()
@@ -148,14 +148,6 @@ def bfs_recursive(graph, start, end):
             neighbors = set(graph[current_vertex]) - visited
             for neighbor in neighbors:
                 queue.append((neighbor, path + [neighbor]))
-
-def random_start_end_nodes(graph):
-    nodes = list(graph.nodes())
-    start = random.choice(nodes)
-    end = random.choice(nodes)
-    while start == end:
-        end = random.choice(nodes)
-    return start, end
 
 def main():
     G_berlin_metro = nx.DiGraph()
@@ -195,37 +187,35 @@ def main():
 
     G_berlin_metro.add_edges_from(edges_with_distances)
 
-    nodes = list(G_berlin_metro.nodes())
+    print("Алгоритм | Початковий вузол | Кінцевий вузол | Маршрут")
+    print("-" * 45)
+    for i in range(len(station_names)):
+        start_node = random.choice(station_names)                               #"Alexanderplatz"
+        end_node = random.choice(station_names)
+        if start_node != end_node:
 
-    # Створення таблиці результатів
-    results = []
 
-    for start_node in nodes:
-        for end_node in nodes:
-            if start_node != end_node:
-                dfs_path = dfs_recursive(G_berlin_metro, start_node, set())
-                bfs_path = bfs_recursive(G_berlin_metro, start_node, end_node)
+            dfs_path = dfs_recursive(G_berlin_metro, start_node, set())
+            bfs_path = bfs_recursive(G_berlin_metro, start_node, end_node)
 
-                results.append({
-                    'Algorithm': 'DFS',
-                    'Start Node': start_node,
-                    'End Node': end_node,
-                    'Path': dfs_path
-                })
 
-                results.append({
-                    'Algorithm': 'BFS',
-                    'Start Node': start_node,
-                    'End Node': end_node,
-                    'Path': bfs_path
-                })
+            # print("DFS шлях:", dfs_path)
+            # print("BFS шлях:", bfs_path)
+            print(
+                f"DFS      | {start_node:^16} | {end_node:^15} | {dfs_path}")
+            print(
+                f"BFS      | {start_node:^16} | {end_node:^15} | {bfs_path}")
 
-    # Виведення у вигляді таблиці Markdown
-    markdown_table = pd.DataFrame(results).to_markdown(index=False)
 
-    # Запис у файл або вивід у консоль
-    with open('table.md', 'w') as file:
-        file.write(markdown_table)
+    pos = nx.circular_layout(G_berlin_metro)
+    nx.draw(G_berlin_metro, pos, with_labels=True, node_size=700, node_color='skyblue', font_size=8,
+            font_color='black', font_weight='bold', edge_color='gray', width=1.5, font_family='Arial')
+
+    edge_labels = nx.get_edge_attributes(G_berlin_metro, 'вага')
+    nx.draw_networkx_edge_labels(
+        G_berlin_metro, pos, edge_labels=edge_labels, font_color='red')
+
+    plt.show()
 
 if __name__ == "__main__":
     main()
