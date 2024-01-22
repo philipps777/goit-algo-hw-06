@@ -2,16 +2,12 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 def dijkstra(graph, start):
-    # Ініціалізація відстаней та множини невідвіданих вершин
     distances = {vertex: float('infinity') for vertex in graph}
     distances[start] = 0
     unvisited = set(graph.nodes)
 
     while unvisited:
-        # Знаходження вершини з найменшою відстанню серед невідвіданих
         current_vertex = min(unvisited, key=lambda vertex: distances[vertex])
-
-        # Якщо поточна відстань є нескінченністю, то ми завершили роботу
         if distances[current_vertex] == float('infinity'):
             break
 
@@ -19,16 +15,16 @@ def dijkstra(graph, start):
             weight = graph.get_edge_data(current_vertex, neighbor).get('вага', 0)
             distance = distances[current_vertex] + weight
 
-            # Якщо нова відстань коротша, то оновлюємо найкоротший шлях
+
             if distance < distances[neighbor]:
                 distances[neighbor] = distance
 
-        # Видаляємо поточну вершину з множини невідвіданих
+
         unvisited.remove(current_vertex)
 
     return distances
 
-# Створення графа та виведення основних характеристик
+
 G_berlin_metro = nx.DiGraph()
 
 station_names = [
@@ -74,15 +70,15 @@ print("Кількість ребер у графі: ", num_edges)
 print("Ступінь вершин: ", degrees)
 print("Ступінь центральності вершин: ", degree_centrality)
 
-# Викликаємо функцію та отримуємо найкоротші шляхи з кожної вершини до інших
+
 start_vertex = "Alexanderplatz"
 shortest_paths = {vertex: dijkstra(G_berlin_metro, vertex) for vertex in G_berlin_metro.nodes}
 
-# Виводимо результати
+
 for vertex, distances in shortest_paths.items():
     print(f"Найкоротші шляхи з {start_vertex} до {vertex}: {distances}")
 
-# Візуалізація графа
+
 pos = nx.circular_layout(G_berlin_metro)
 nx.draw(G_berlin_metro, pos, with_labels=True, node_size=700, node_color='skyblue', font_size=8,
         font_color='black', font_weight='bold', edge_color='gray', width=1.5, font_family='Arial')
