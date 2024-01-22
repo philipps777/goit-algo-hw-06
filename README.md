@@ -1,6 +1,6 @@
 ### Граф метро в Берліні
 
-![graph](graph.png)
+![graph](images/graph.png)
 
 ### Висновки
 
