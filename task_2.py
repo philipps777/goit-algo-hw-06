@@ -1,8 +1,9 @@
-
-
 import networkx as nx
 import matplotlib.pyplot as plt
 from collections import deque
+import random
+import pandas as pd
+
 
 def dfs_recursive(graph, vertex, visited=None, path=None):
     if visited is None:
@@ -15,6 +16,7 @@ def dfs_recursive(graph, vertex, visited=None, path=None):
         if neighbor not in visited:
             dfs_recursive(graph, neighbor, visited, path)
     return path
+
 
 def bfs_recursive(graph, start, end):
     queue = deque([(start, [start])])
@@ -31,6 +33,16 @@ def bfs_recursive(graph, start, end):
             neighbors = set(graph[current_vertex]) - visited
             for neighbor in neighbors:
                 queue.append((neighbor, path + [neighbor]))
+
+
+def random_start_end_nodes(graph):
+    nodes = list(graph.nodes())
+    start = random.choice(nodes)
+    end = random.choice(nodes)
+    while start == end:
+        end = random.choice(nodes)
+    return start, end
+
 
 def main():
     G_berlin_metro = nx.DiGraph()
@@ -70,18 +82,25 @@ def main():
 
     G_berlin_metro.add_edges_from(edges_with_distances)
 
-    start_node = "Alexanderplatz"
-    end_node = "Märkisches Museum"
+    nodes = list(G_berlin_metro.nodes())
 
+    # Виведення результатів у вигляді таблиці
+    print("Алгоритм | Початковий вузол | Кінцевий вузол | Маршрут")
+    print("-" * 45)
 
-    dfs_path = dfs_recursive(G_berlin_metro, start_node, set())
-    bfs_path = bfs_recursive(G_berlin_metro, start_node, end_node)
+    for start_node in nodes:
+        for end_node in nodes:
+            if start_node != end_node:
+                # Виклик алгоритмів для кожної пари
+                dfs_path = dfs_recursive(G_berlin_metro, start_node, set())
+                bfs_path = bfs_recursive(G_berlin_metro, start_node, end_node)
 
+                print(
+                    f"DFS      | {start_node:^16} | {end_node:^15} | {dfs_path}")
+                print(
+                    f"BFS      | {start_node:^16} | {end_node:^15} | {bfs_path}")
 
-    print("DFS шлях:", dfs_path)
-    print("BFS шлях:", bfs_path)
-
-
+    # Візуалізація графа
     pos = nx.circular_layout(G_berlin_metro)
     nx.draw(G_berlin_metro, pos, with_labels=True, node_size=700, node_color='skyblue', font_size=8,
             font_color='black', font_weight='bold', edge_color='gray', width=1.5, font_family='Arial')
@@ -91,6 +110,7 @@ def main():
         G_berlin_metro, pos, edge_labels=edge_labels, font_color='red')
 
     plt.show()
+
 
 if __name__ == "__main__":
     main()
